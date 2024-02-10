@@ -61,10 +61,10 @@ problem(paper_jam) :-
 
 problem(out_of_paper) :-
     query('Is there out-of- paper error during printing').
-%Новые проблемы.
+%РќРѕРІС‹Рµ РїСЂРѕР±Р»РµРјС‹.
 problem(click):-
     query('If you click on it, will it sound like a click?').
-problem(BSOD) :-
+problem(bsod) :-
     query('Does it store, retrieve and process data?').
 problem(large_size):-
     query('Is the problem due to the large size?').
@@ -77,11 +77,11 @@ problem(oval_view):-
 
 problem(its_burning_up):-
     query('Is the food starting to burn to her?').
-% Добавлен объект 1 - без доп вопросов.
-%Добавить несколько объектов таким образом, чтобы их можно было однозначно определить без введения дополнительных вопросов.
+% Р”РѕР±Р°РІР»РµРЅ РѕР±СЉРµРєС‚ 1 - Р±РµР· РґРѕРї РІРѕРїСЂРѕСЃРѕРІ.
+%Р”РѕР±Р°РІРёС‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ РѕР±СЉРµРєС‚РѕРІ С‚Р°РєРёРј РѕР±СЂР°Р·РѕРј, С‡С‚РѕР±С‹ РёС… РјРѕР¶РЅРѕ Р±С‹Р»Рѕ РѕРґРЅРѕР·РЅР°С‡РЅРѕ РѕРїСЂРµРґРµР»РёС‚СЊ Р±РµР· РІРІРµРґРµРЅРёСЏ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С… РІРѕРїСЂРѕСЃРѕРІ.
 fault(the_mouse):- problem(click).
-fault(processor) :- problem(BSOD).
-%с введением дополнительных вопросов.
+fault(processor) :- problem(bsod).
+%СЃ РІРІРµРґРµРЅРёРµРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С… РІРѕРїСЂРѕСЃРѕРІ.
 fault(fridge):-
     problem(large_size),
     problem(does_not_freeze).
