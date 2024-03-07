@@ -65,3 +65,11 @@ brothers(X) :- brother(Y,X),print(Y), nl, fail.
 b_s(X,Y) :-  parent(Z,X), parent(Z,Y), man(Z), X \= Y.
 % Предикат b_s(X,Y), который выводит всех братьев или сестер X.
 b_s(X):- b_s(Y,X),print(Y), nl, fail.
+
+% 2 задание - Построить предикат father(?X, ?Y).
+father(X,Y):- man(X), parent(X,Y).
+father(X):- father(Y,X), print(Y), nl, fail.
+
+%Построить предикат wife(?X, ?Y).
+wife(X,Y) :- woman(X),parent(X,Z), parent(Y,Z), !.
+wife(X) :- wife(Y,X), print(Y), nl, fail.
