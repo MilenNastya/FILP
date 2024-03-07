@@ -73,3 +73,22 @@ father(X):- father(Y,X), print(Y), nl, fail.
 %Построить предикат wife(?X, ?Y).
 wife(X,Y) :- woman(X),parent(X,Z), parent(Y,Z), !.
 wife(X) :- wife(Y,X), print(Y), nl, fail.
+
+% 3 задание - Построить предикат grand_ma(X,Y), который проверяет,
+% является ли X бабушкой Y.
+
+mother(X,Y) :- woman(X), parent(X,Y).
+grand_ma(X,Y) :- woman(X), mother(X,Z), parent(Z,Y),!.                            
+grand_mas(X):- mother(Y, Z),parent(Z,X), print(Y), nl, fail.
+
+%является ли X и Y дедущкой и внучкой или внучкой и дедушкой.
+
+grand_pa_and_da(X,Y) :- man(X), woman(Y), parent(Z,Y), parent(X,Z).
+grand_pa_and_da(X,Y) :- man(Y), woman(X), parent(Y,Z), parent(Z,X).
+
+% является ли X племяницей Y. woman(z) - чтобы 1 раз выдавалось, а не 2
+% раза.
+
+sister(X,Y) :- woman(X), woman(Z), parent(Z,X), parent(Z,Y), X\=Y.
+niece(X,Y) :- parent(Z,X), sister(Z,Y).
+niece(X) :-  niece(Y,X), print(Y), nl, fail.
