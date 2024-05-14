@@ -36,3 +36,14 @@ sum_num_down(0,S,S):-!.
 sum_num_down(N,S,X):-X1 is X + N mod 10,
 N1 is N div 10,
 sum_num_down(N1,S,X1). 
+
+%Проверить, является ли число свободным от квадратов.
+%call_square_free(+Num)
+call_square_free(Num):-square_free(Num,2).
+square_free(Num,Num):-!.
+square_free(Num, Squarer):-
+Square is Squarer*Squarer,
+Moded is Num mod Square,
+Moded \= 0,
+Squarer_temp is Squarer + 1,
+square_free(Num,Squarer_temp).
