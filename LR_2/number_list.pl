@@ -47,3 +47,12 @@ Moded is Num mod Square,
 Moded \= 0,
 Squarer_temp is Squarer + 1,
 square_free(Num,Squarer_temp).
+
+%Реализовать предикат чтения списка с клавиатуры и предикат вывода списка на экран.
+%read_list(+N,-List)
+read_list(0,[]):-!.
+read_list(N,[Head|Tail]) :- read(Head), NewN is N - 1,
+    read_list(NewN,Tail).
+%write_list(+List)
+write_list([]) :- !.
+write_list([H|T]) :- write(H), nl, write_list(T).
