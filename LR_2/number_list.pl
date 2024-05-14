@@ -56,3 +56,29 @@ read_list(N,[Head|Tail]) :- read(Head), NewN is N - 1,
 %write_list(+List)
 write_list([]) :- !.
 write_list([H|T]) :- write(H), nl, write_list(T).
+
+%Реализовать предикат sum_list_down(+List, ?Summ), sum_list_up(+List, ?Summ), которые проверяют, является ли
+%Summ суммой элементов списка или записывает в эту переменную сумму элементов. Выполнить рекурсией вниз и вверх соответственно.
+%Рекурсия вниз
+%sum_list_down(+List, -Sum)
+sum_list_down(List,Sum) :- sum_list_down(List,0,Sum).
+sum_list_down([],CurSum,CurSum):-!.
+sum_list_down([H|T],CurSum,Sum) :- NewSum is CurSum + H,
+    sum_list_down(T,NewSum,Sum).
+
+%read_sum_write(+C)
+read_sum_write(C):- read_list(C,List),
+sum_list_down(List,Sum),
+write(Sum).
+
+%Рекурсия вверх
+%sum_list_up(+List,-Sum)
+sum_list_up([],0):-!.
+sum_list_up([H|T],Sum) :- sum_list_up(T,SumTail), Sum is SumTail + H.
+
+%Построить предикат, который удаляет все элементы, сумма цифр которых равна данной.
+%sum_cifr_del(+List,-X,+Number)
+sum_cifr_del([],[],Number). 
+sum_cifr_del([H|T],X,Number):-cifr_sum_down(H,Sum),
+Sum==Number,sum_cifr_del(T,X,Number). 
+sum_cifr_del([H|X],[H|Y],Number):-sum_cifr_del(X,Y,Number). 
