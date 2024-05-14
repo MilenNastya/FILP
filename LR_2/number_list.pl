@@ -20,3 +20,19 @@ fact2(N,A,X):- N>0,
     fact2(N1,A1,X1),
     X is X1.
 call_fact2(N,X):-fact2(N,1,X).
+
+%Найти сумму цифр числа с помощью рекурсии вверх. Найти сумму цифр числа с помощью рекурсии вниз.
+%Рекурсия вверх
+%sum_num_up(+N,-S).
+sum_num_up(0,0):-!.
+sum_num_up(N,S):- N1 is N div 10,
+sum_num_up(N1,S1),
+S is S1+N mod 10.
+
+%Рекурсия вниз
+%sum_num_down(+N,-S).
+sum_num_down(N,S):-sum_num_down(N,S,0).
+sum_num_down(0,S,S):-!.
+sum_num_down(N,S,X):-X1 is X + N mod 10,
+N1 is N div 10,
+sum_num_down(N1,S,X1). 
