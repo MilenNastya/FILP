@@ -82,3 +82,49 @@ sum_cifr_del([],[],Number).
 sum_cifr_del([H|T],X,Number):-cifr_sum_down(H,Sum),
 Sum==Number,sum_cifr_del(T,X,Number). 
 sum_cifr_del([H|X],[H|Y],Number):-sum_cifr_del(X,Y,Number). 
+
+%Задание 2 Вариант 8
+
+% Найти максимальную цифру числа N
+% max_digit(+N, -MaxDigit)
+max_digit(N, MaxDigit) :-
+    number_codes(N, Digits),
+    max_digit_list(Digits, '0', MaxDigitChar),
+    atom_number(MaxDigitChar, MaxDigit).
+% max_digit_list(+Digits, +CurrentMax, -MaxDigit)
+% Рекурсивно находим максимальную цифру в списке цифр Digits
+max_digit_list([], MaxDigit, MaxDigit).
+max_digit_list([H|T], CurrentMax, MaxDigit) :-
+    char_code(H, HCode),
+    char_code(CurrentMax, CurrentMaxCode),
+    (HCode > CurrentMaxCode -> NewMax = H; NewMax = CurrentMax),
+    max_digit_list(T, NewMax, MaxDigit).
+
+% Найти сумму цифр числа N, делящихся на 3
+% sum_digits_div_3_list(+Digits, +CurrentSum, -Sum)
+% sum_digits_div_3(+N, -Sum)
+sum_digits_div_3(N, Sum) :-
+    number_codes(N, Digits),
+    sum_digits_div_3_list(Digits, 0, Sum).
+
+sum_digits_div_3_list([], Sum, Sum).
+% Рекурсивно находим сумму цифр, делящихся на 3 в списке цифр Digits
+sum_digits_div_3_list([H|T], CurrentSum, Sum) :-
+    atom_number(H, Digit),
+    (Digit mod 3 =:= 0 -> NewSum is CurrentSum + Digit; NewSum is CurrentSum),
+    sum_digits_div_3_list(T, NewSum, Sum).
+
+% Найти количество делителей числа N
+%Рекурсивно переберем все числа от 1 до N и посчитаем количество делителей:
+% count_divisors(+N, -Count)
+count_divisors(N, Count) :-
+    count_divisors(N, 1, 0, Count).
+% count_divisors(+N, +Current, +CurrentCount, -Count)
+% Рекурсивно находим количество делителей числа N
+count_divisors(N, Current, CurrentCount, Count) :-
+    Current =< N,
+    (N mod Current =:= 0 -> NewCount is CurrentCount + 1; NewCount is CurrentCount),
+    Next is Current + 1,
+    count_divisors(N, Next, NewCount, Count).
+count_divisors(_, Count, Count).
+
