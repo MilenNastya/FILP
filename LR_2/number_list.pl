@@ -128,3 +128,71 @@ count_divisors(N, Current, CurrentCount, Count) :-
     count_divisors(N, Next, NewCount, Count).
 count_divisors(_, Count, Count).
 
+% Задание 5.8
+%Найти количество чисел, взаимно простых с заданным.
+%Найти делитель числа, являющийся взаимно простым с наибольшим количеством
+%цифр данного числа.
+% vs_simple(+X,+Y,-Result)
+% Проверяет, является ли X простым по отношению к Y.
+vs_simple(Number1, Number2, 1) :-
+    max(Number1, Number2, MaxNumber),
+    min(Number1, Number2, MinNumber),
+    vs_simple_rec(MaxNumber, MinNumber).
+vs_simple(_, _, 0) :- !.
+
+% vs_simple_rec(+X,+Y)
+% Рекурсивно проверяет, если наибольший общий делитель(X, Y) равен 1.
+vs_simple_rec(_, 1) :- !, true.
+vs_simple_rec(X, Y) :- 0 is X mod Y, !, fail.
+vs_simple_rec(X, Y) :-
+    NewY is X mod Y,
+    NewX is Y,
+    vs_simple_rec(NewX, NewY).
+
+% check_simple_count(+N,+Del,-Count)
+% Считает количество цифр в N, которые являются простыми по отношению к Del.
+check_simple_count(0, _, 0) :- !.
+check_simple_count(N, Del, Count) :-
+    NewN is N div 10,
+    check_simple_count(NewN, Del, PrevCount),
+    NewDigit is N mod 10,
+    vs_simple(NewDigit, Del, Result),
+    Count is PrevCount + Result, !.
+
+% chose_del(+PrevCountMax,+CurrentCount,+CurrentDel,+PrevResultDel,-ResultDel)
+% Выбирает делитель, который приводит к наибольшему количеству простых цифр.
+chose_del(CurrentCount, CurrentCount, _, PrevResultDel, PrevResultDel) :- !.
+chose_del(PrevCountMax, CurrentCount, _, PrevResultDel, ResultDel) :-
+    PrevCountMax > CurrentCount, ResultDel is PrevResultDel.
+chose_del(_, _, CurrentDel, _, ResultDel) :- ResultDel is CurrentDel, !.
+
+% get_del_down(+N,+CurrentDel,+CurrentMaxCount,+CurrentMaxDel,-ResultDel)
+% Рекурсивно пробует делители, уменьшая их до 1, и выбирает лучший делитель.
+get_del_down(_, 1, _, ResultDel, ResultDel) :- !.
+get_del_down(N, CurrentDel, CurrentMaxCount, CurrentMaxDel, ResultDel) :-
+    0 is N mod CurrentDel,
+    check_simple_count(N, CurrentDel, NewCount),
+    chose_del(CurrentMaxCount, NewCount, CurrentDel, CurrentMaxDel, NewMaxDel),
+    max(CurrentMaxCount, NewCount, NewMaxCount),
+    NewCurrentDel is CurrentDel - 1,
+    get_del_down(N, NewCurrentDel, NewMaxCount, NewMaxDel, ResultDel).
+get_del_down(N, CurrentDel, CurrentMaxCount, CurrentMaxDel, ResultDel) :-
+    NewCurrentDel is CurrentDel - 1,
+    get_del_down(N, NewCurrentDel, CurrentMaxCount, CurrentMaxDel, ResultDel).
+
+% get_del(+N,-Del)
+% Del содержит максимальный делитель N, основанный на количестве цифр N, которые являются простыми по отношению к этому делителю.
+get_del(N, Del) :- get_del_down(N, N, 0, 0, Del), !.
+
+% read5_8(-InputNumber)
+% InputNumber содержит введённое число.
+read5_8(InputNumber) :- read(InputNumber), !.
+
+% main5
+% Основная процедура
+main5 :-
+    read5_8(InputNumber),
+    get_del(InputNumber, ResultDel),
+    write(ResultDel), !.
+
+
