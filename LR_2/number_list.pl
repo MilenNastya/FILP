@@ -195,4 +195,125 @@ main5 :-
     get_del(InputNumber, ResultDel),
     write(ResultDel), !.
 
+% Задание 6.8
+%Номер 3797 обладает интересным свойством. Будучи простым, можно непрерывно удалять цифры слева направо 
+% и оставаться простыми на каждом этапе: 3797, 797, 97 и 7
+%Аналогично мы можем работать справа налево: 3797, 379, 37 и 3
+%Найдите сумму простых чисел, меньших 1000000 которые можно обрезать слева направо
+%и справа налево.
+%ПРИМЕЧАНИЕ. 2, 3, 5 и 7 не считаются усеченными простыми числами.
+%Задача должна быть решена без использования списков.
+% proverka_na_krimatyh(+N, +CurrentDel)
+% Истинно, если N является простым числом.
+proverka_na_krimatyh(1, _) :- !, fail.
+proverka_na_krimatyh(N, _) :- prostoye(N), !.
+proverka_na_krimatyh(N, 1) :- assert(prostoye(N)), !.
+proverka_na_krimatyh(N, CurrentDel) :-
+    0 is N mod CurrentDel, !, fail.
+proverka_na_krimatyh(N, CurrentDel) :-
+    NewCurrentDel is CurrentDel - 1,
+    proverka_na_krimatyh(N, NewCurrentDel).
+
+:- dynamic krumatoeSleva/1.
+:- dynamic krumatoeSprava/1.
+:- dynamic prostoye/1.
+
+% obrezyvanie_sprava(+N)
+% Истинно, если N всегда простое при обрезании справа.
+obrezyvanie_sprava(2) :- !.
+obrezyvanie_sprava(3) :- !.
+obrezyvanie_sprava(5) :- !.
+obrezyvanie_sprava(7) :- !.
+obrezyvanie_sprava(N) :- krumatoeSprava(N), !.
+obrezyvanie_sprava(N) :-
+    FirstDel is N div 2,
+    proverka_na_krimatyh(N, FirstDel),
+    NewN is N div 10,
+    obrezyvanie_sprava(NewN),
+    assert(krumatoeSprava(N)), !.
+
+% poluchit_10ku(+X, +CurrentRes, -Result)
+% Result содержит 10**y<X.
+poluchit_10ku(X, CurrentRes, Result) :-
+    X < CurrentRes,
+    Result is CurrentRes div 10, !.
+poluchit_10ku(X, CurrentRes, Result) :-
+    NewCurrentRes is CurrentRes * 10,
+    poluchit_10ku(X, NewCurrentRes, Result).
+
+% obrezyvanie_sleva(+N)
+% Истинно, если N всегда простое при обрезании слева.
+obrezyvanie_sleva(2) :- !.
+obrezyvanie_sleva(3) :- !.
+obrezyvanie_sleva(5) :- !.
+obrezyvanie_sleva(7) :- !.
+obrezyvanie_sleva(N) :- krumatoeSleva(N), !.
+obrezyvanie_sleva(N) :-
+    FirstDel is N div 2,
+    proverka_na_krimatyh(N, FirstDel),
+    poluchit_10ku(N, 1, TenRes),
+    NewN is N mod TenRes,
+    obrezyvanie_sleva(NewN),
+    assert(krumatoeSleva(N)), !.
+
+% proverka_nechetny_hisla(+InpN, +CurrentN, -UpdNumb)
+% UpdNumber содержит число с замененной первой четной цифрой в InpN, кроме первой цифры.
+proverka_nechetny_hisla(InpN, CurrentN, UpdNumb) :- 
+    CurrentN < 10, 
+    1 is CurrentN mod 2, 
+    UpdNumb is 0, !.
+proverka_nechetny_hisla(InpN, InpN, UpdNumb) :- 
+    poluchit_10ku(InpN, 1, TenRes),
+    FirstN is InpN div TenRes,
+    (FirstN is 2; FirstN is 5),
+    NewN is InpN mod TenRes,
+    proverka_nechetny_hisla(InpN, NewN, NewUpd),
+    UpdNumb is FirstN * TenRes + NewUpd, !.
+proverka_nechetny_hisla(InpN, CurrentN, UpdNumb) :- 
+    poluchit_10ku(CurrentN, 1, TenRes),
+    Digit is CurrentN div TenRes,
+    0 is Digit mod 2, !,
+    UpdNumb is (Digit + 1) * TenRes.
+proverka_nechetny_hisla(InpN, CurrentN, UpdNumb) :- 
+    poluchit_10ku(CurrentN, 1, TenRes),
+    Digit is CurrentN div TenRes,
+    Digit is 5, !,
+    UpdNumb is (Digit + 1) * TenRes.
+proverka_nechetny_hisla(InpN, CurrentN, UpdNumb) :- 
+    poluchit_10ku(CurrentN, 1, TenRes),
+    Digit is CurrentN div (TenRes div 10),
+    0 is Digit mod 2, !,
+    UpdNumb is (Digit + 1) * (TenRes div 10).
+proverka_nechetny_hisla(InpN, CurrentN, UpdNumb) :-
+    poluchit_10ku(CurrentN, 1, TenRes),
+    NewN is CurrentN mod TenRes,
+    proverka_nechetny_hisla(InpN, NewN, PrevUpdNumb),
+    UpdNumb is PrevUpdNumb + (CurrentN div TenRes) * TenRes.
+
+% obrezka(+N, +Sum, -ResultSum)
+% ResultSum содержит сумму чисел, которые можно обрезать слева и справа.
+obrezka(1000001, ResultSum, ResultSum) :- !.
+obrezka(N, Sum, ResultSum) :-
+    proverka_nechetny_hisla(N, N, UpdateNumber),
+    max(N, UpdateNumber, ResNumb),
+    obrezyvanie_sleva(ResNumb),
+    obrezyvanie_sprava(ResNumb),
+    NewSum is Sum + ResNumb,
+    NewN is ResNumb + 2,
+    write(ResNumb), nl,
+    obrezka(NewN, NewSum, ResultSum).
+obrezka(N, Sum, ResultSum) :-
+    proverka_nechetny_hisla(N, N, UpdateNumber),
+    max(N, UpdateNumber, ResNumb),
+    write(ResNumb), nl,
+    NewN is ResNumb + 2,
+    obrezka(NewN, Sum, ResultSum).
+
+% main(-ResultSum)
+% ResultSum содержит сумму чисел, которые можно обрезать слева и справа.
+main(ResultSum) :-
+    retractall(krumatoeSleva(_)),
+    retractall(krumatoeSprava(_)),
+    retractall(prostoye(_)),
+    obrezka(11,0, ResultSum), !.
 
