@@ -317,3 +317,39 @@ main(ResultSum) :-
     retractall(prostoye(_)),
     obrezka(11,0, ResultSum), !.
 
+
+% Задание 8.8
+% Пятеро студентов едут на велосипедах.Их зовут Сергей, Борис, Леонид, Григорий и Виктор.
+%Велосипеды сделаны в пяти городах: Риге, Пензе, Львове, Харькове
+%Каждый из студентов родился в одном из этих городов, но ни один
+%из студентов не едет на велосипеде, сделанном на его родине.
+%Сергей едет на велосипеде, сделанном в Риге.
+%Борис родом из Риги, у него велосипед из Пензы.
+%У Виктора велосипед из Москвы.
+%У Григория велосипед из Харькова.
+%Виктор родом из Львова.
+%Уроженец Пензы едет на велосипеде, сделанном на родине Леонида.
+%Кто из студентов родом из Москвы ?
+
+pr_stud_from_mosc:- Students = [_,_,_,_,_],
+    in_list(Students,[_,penza,_]),
+    in_list(Students,[_,kharkov,_]),
+    in_list(Students,[_,moscow,_]),
+
+    in_list(Students,[_,_,lvov]),
+
+    in_list(Students,[leonid,LeonidMotherland,_]),
+    in_list(Students,[sergie,_,riga]),
+    in_list(Students,[boris,riga,penza]),
+    in_list(Students,[victor,_,moscow]),
+    in_list(Students,[grigori,_,kharkov]),
+    in_list(Students,[victor,lvov,_]),
+    in_list(Students,[_,penza,LeonidMotherland]),
+
+    not(in_list(Students,[_,City,City])),
+    
+    %Вывод студента из москвы
+    in_list(Students,[Name,moscow,_]),
+    write(Name),!.
+
+
