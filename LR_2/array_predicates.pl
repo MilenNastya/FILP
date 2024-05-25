@@ -144,3 +144,94 @@ pr_girlfriends:-Girls = [_,_,_],
     write("vali:"),write(Shoes1),write(" "), write(Dress1),nl,
     write("anna:"),write(Shoes2),write(" ") ,write(Dress2),nl,
     write("natasha:"),write(Shoes3), write(" "),write(Dress3),nl,!.
+
+%Задание 7.38
+%Дан целочисленный массив и отрезок a..b. Необходимо найти количество
+%элементов, значение которых принадлежит этому отрезку.
+%list_length(+InputList,-ResCount)
+list_length([],0):-!.
+list_length([_|Tail],ResCount):-list_length(Tail,PrevResCount),ResCount is PrevResCount + 1,!.
+
+%main7_38(+InputList,+Interval,-ResultCount)
+main7_38(InputList,Interval,ResultCount):-main_34(InputList,Interval,ListOtvet),list_length(ListOtvet,ResultCount),!.
+task7_38:-read_34(InputList,Interval),main7_38(InputList,Interval,ResultCount),write(ResultCount),!.
+
+%Задание 7.46
+%Дан целочисленный массив. Необходимо вывести вначале его положительные
+%элементы, а затем - отрицательные.
+%choose_negative_elements(+InputList,-ResultList)
+choose_negative_elements([],[]):-!.
+choose_negative_elements([Head|Tail],[Head|NewCurResList]):-choose_negative_elements(Tail,NewCurResList),Head<0,!.
+choose_negative_elements([_|Tail],NewCurResList):-choose_negative_elements(Tail,NewCurResList),!.
+
+%choose_positive_elements(+InputList,-ResultList)
+choose_positive_elements([],[]):-!.
+choose_positive_elements([Head|Tail],[Head|NewCurResList]):-choose_positive_elements(Tail,NewCurResList),Head>0,!.
+choose_positive_elements([_|Tail],NewCurResList):-choose_positive_elements(Tail,NewCurResList),!.
+
+%main(+InputList,-ResultList)
+main7_46(InputList,ResultList):-choose_negative_elements(InputList,NegativeList),choose_positive_elements(InputList,PositiveList),concat(PositiveList,NegativeList,ResultList),!.
+
+%task7_46
+task7_46:-read_list(InputList),main7_46(InputList,ResultList),write_list(ResultList),!.
+
+
+% Задание 7.50
+%Для двух введенных списков L1 и L2 построить новый список, состоящий из
+%элементов, встречающихся только в одном из этих списков и не повторяющихся в них.
+% del_element(+InputList,+El,-NewList)
+del_element([],_,[]):-!.
+del_element([El|Tail],El,Tail):-!.
+del_element([Head|Tail],El,[Head|PrevResult]):-del_element(Tail,El,PrevResult),!.
+
+%get_unique_elements(+InputList,-ResultList)
+get_unique_elements([],[]):-!.
+get_unique_elements([Head|Tail],PrevResultList):-get_unique_elements(Tail,PrevResultList), in_list1(PrevResultList,Head),!.
+get_unique_elements([Head|Tail],[Head|PrevResultList]):-get_unique_elements(Tail,PrevResultList),!.
+
+%concat_unique(+FirstList,+SecondList,-ResultList)
+concat_unique([],SecondList,SecondList):-!.
+concat_unique([Head|Tail],SecondList,PrevResultList):-in_list1(SecondList,Head),del_element(SecondList,Head,NewSecondList),concat_unique(Tail,NewSecondList,PrevResultList),!.
+concat_unique([Head|Tail],SecondList,[Head|PrevResultList]):-concat_unique(Tail,SecondList,PrevResultList),!.
+
+%read7_50(-FirstList,-SecondList)
+read7_50(FirstList,SecondList):-read_list(FirstList),write("Input second list"),nl,read_list(SecondList),!.
+
+%main7_50(+FirstList,+SecondList,-ResultList)
+main7_50(FirstList,SecondList,ResultList):-get_unique_elements(FirstList,FirstUnique),get_unique_elements(SecondList,SecondUnique),concat_unique(FirstUnique,SecondUnique,ResultList),!.
+
+%task7_50
+task7_50:-read7_50(InputList1,InputList2),main7_50(InputList1,InputList2,ResultList),write_list(ResultList),!.
+
+%Задание 7.56
+%Для введенного списка посчитать среднее арифметическое непростых элементов,
+%которые больше, чем среднее арифметическое простых.
+%get_srt(+ElemSum,+ElemCount,-Result)
+get_sr(_,0,0):-!.
+get_sr(ElemSum,ElemCount,Result):-Result is ElemSum/ElemCount,!.
+
+%check_if_simple(+N,+CurrentDel)
+check_if_simple(1,_):-!,fail.
+check_if_simple(N,_):-simple(N),!.
+check_if_simple(N,1):-assert(simple(N)),!.
+check_if_simple(N,CurrentDel):-0 is N mod CurrentDel,!,fail.
+check_if_simple(N,CurrentDel):-NewCurrentDel is CurrentDel - 1,check_if_simple(N,NewCurrentDel).
+
+%get_sum_of_simple(+InputList,-ResultSum,-ResultCount)
+get_sum_of_simple([],0,0):-!.
+get_sum_of_simple([Head|Tail],CurrentSum,CurrentCount):-get_sum_of_simple(Tail,PrevCurrentSum,PrevCurrentCount),FirstDel is Head - 1,check_if_simple(Head,FirstDel),CurrentSum is PrevCurrentSum + Head,CurrentCount is PrevCurrentCount + 1,!.
+get_sum_of_simple([_|Tail],PrevCurrentSum,PrevCurrentCount):-get_sum_of_simple(Tail,PrevCurrentSum,PrevCurrentCount),!.
+:-dynamic simple/1.
+
+%get_sum_of_not_simple(+InputList,+Sr,-ResultSum,-ResultCount)
+get_sum_of_not_simple([],Sr,0,0):-!.
+get_sum_of_not_simple([Head|Tail],Sr,CurrentSum,CurrentCount):-get_sum_of_not_simple(Tail,Sr,PrevCurrentSum,PrevCurrentCount),FirstDel is Head - 1, not(check_if_simple(Head,FirstDel)),Head>Sr,CurrentSum is PrevCurrentSum + Head,CurrentCount is PrevCurrentCount + 1,!.
+get_sum_of_not_simple([_|Tail],Sr,PrevCurrentSum,PrevCurrentCount):-get_sum_of_not_simple(Tail,Sr,PrevCurrentSum,PrevCurrentCount),!.
+
+%main7_56(+InputList,-NotSimpleSr)
+% NotSimpleSr contains arithmethic average of not simple elements of InputList which are larger than average of simple elements
+main7_56(InputList,NotSimpleSr):-retractall(simple(_)),get_sum_of_simple(InputList,ResultSum,ResultCount),get_sr(ResultSum,ResultCount,ResultSr),get_sum_of_not_simple(InputList,ResultSr,NotSimpleSum,NotSimpleCount),get_sr(NotSimpleSum,NotSimpleCount,NotSimpleSr),!.
+
+%task7_56
+%main predicate for task 7.56
+task7_56:-read_list(InputList),main7_56(InputList,Result),write(Result),!.
