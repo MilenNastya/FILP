@@ -352,4 +352,3 @@ pr_stud_from_mosc:- Students = [_,_,_,_,_],
     in_list(Students,[Name,moscow,_]),
     write(Name),!.
 
-
